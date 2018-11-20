@@ -89,35 +89,27 @@ int main()
 	enterScreenBuffer();
 	do_resize(0);
 
-	int size = 0;
-	char* buffer = new char[size];
+	std::string ansiParsingTmp;
+	std::string buffer = "";
 
 	char lol = 0;
 	while(lol != 4)
 	{
 		std::cin >> lol;
 
+		//Ignore ANSI in a stupid way.
 		if(lol == '\e')
 		{
 			continue;
 		}
 
+		//Print last output
 		setCursor(3, 2);
 		std::cout << lol << "  - " << +lol;
 
-		//Add to buffer:
-		int newSize = size + 1;
-		setCursor(3, 8);
-		std::cout << +newSize;
-		char* newBuffer = new char[newSize];
-		std::copy(buffer, buffer + size, newBuffer);
-		delete[] buffer;
-		buffer = newBuffer;
-		size = newSize;
-
-		buffer[size-1] = lol;
-
+		//Print way too big buffer.
 		setCursor(3, 9);
+		buffer += lol;
 		std::cout << buffer;
 	}
 
