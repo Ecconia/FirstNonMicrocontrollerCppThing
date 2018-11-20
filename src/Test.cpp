@@ -6,8 +6,13 @@
 #include "IOHelper.h"
 #include "Test.h"
 
+//### Variables ###
+//Last measured size of the terminal.
 int sizeX = 0;
 int sizeY = 0;
+
+//Input buffer:
+std::string buffer = "";
 
 void print(const std::string& lol)
 {
@@ -47,13 +52,6 @@ void do_resize(int dummy)
 	sizeY = dimension[0];
 
 	drawFrame();
-
-	setCursor(3,4);
-	std::cout << "Dimension:";
-	setCursor(3,5);
-	std::cout << "Y: " << +dimension[0] << "\n";
-	setCursor(3,6);
-	std::cout << "X: " << +dimension[1] << "\n";
 }
 
 void drawFrame()
@@ -79,6 +77,31 @@ void drawFrame()
 	{
 		std::cout << "#";
 	}
+
+	//Print last output:
+	setCursor(3, 2);
+	std::cout << "Control + D to exit.";
+
+	//Print dimension:
+	setCursor(3,4);
+	std::cout << "Dimension:";
+	setCursor(3,5);
+	std::cout << "X: " << +sizeX << "\n";
+	setCursor(3,6);
+	std::cout << "Y: " << +sizeY << "\n";
+	
+	//Print buffer (scrollable):
+	int pointer = 8;
+	for(int i = buffer.length() - 1; i >= 0; i--)
+	{
+		setCursor(3, pointer);
+		std::cout << buffer.c_str()[i] << "  - " << +buffer.c_str()[i];
+
+		if(++pointer > sizeY - 2)
+		{
+			break;
+		}
+	}
 }
 
 int main()
@@ -90,27 +113,22 @@ int main()
 	do_resize(0);
 
 	std::string ansiParsingTmp;
-	std::string buffer = "";
 
-	char lol = 0;
-	while(lol != 4)
+	char lastInput = 0;
+	while(lastInput != 4)
 	{
-		std::cin >> lol;
+		std::cin >> lastInput;
 
+		/*
 		//Ignore ANSI in a stupid way.
 		if(lol == '\e')
 		{
 			continue;
 		}
+		*/
 
-		//Print last output
-		setCursor(3, 2);
-		std::cout << lol << "  - " << +lol;
-
-		//Print way too big buffer.
-		setCursor(3, 9);
-		buffer += lol;
-		std::cout << buffer;
+		buffer += lastInput;
+		drawFrame();
 	}
 
 	leaveScreenBuffer();
